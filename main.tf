@@ -10,16 +10,17 @@ terraform {
 provider "docker" {}
 
 resource "docker_container" "nginx" {
+  for_each = tomap(var.container_ports)
+
   image = docker_image.nginx.image_id
-  name  = "container-${count.index + 1}"
+  name  = "container-${each.key}"
 
   ports {
     internal = 80
-    external = 8080 + count.index
+    external = each.value
   }
 
   depends_on = [docker_image.nginx]
-  count      = var.container_count
 }
 
 resource "docker_image" "nginx" {
