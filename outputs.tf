@@ -5,5 +5,5 @@ output "image_id" {
 
 output "container_id" {
   description = "ID do container"
-  value       = docker_container.nginx.id
+  value       = [for container in docker_container.nginx : container.id]
 }
