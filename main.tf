@@ -24,6 +24,10 @@ resource "docker_container" "nginx" {
 }
 
 resource "docker_image" "nginx" {
-  name         = "nginx:latest"
+  name         = var.docker_image_name
   keep_locally = false
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
