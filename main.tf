@@ -9,25 +9,22 @@ terraform {
 
 provider "docker" {}
 
-resource "docker_container" "nginx" {
-  for_each = tomap(var.container_ports)
-
-  image = docker_image.nginx.image_id
-  name  = "container-${each.key}"
-
-  ports {
-    internal = 80
-    external = each.value
-  }
-
-  depends_on = [docker_image.nginx]
+resource "docker_image" "ubuntu" {
+  name = var.ubuntu_ssh_image
 }
 
-resource "docker_image" "nginx" {
-  name         = var.docker_image_name
-  keep_locally = false
+resource "docker_container" "ubuntu" {
+  image = docker_image.ubuntu.image_id
+  name  = "container-ubuntu"
 
-  lifecycle {
-    ignore_changes = [name]
+  ports {
+    internal = 22
+    external = 2222
+  }
+
+  connection {
+    type = "ssh"
+    user = "root"
+    host = self.network_data[0].gateway
   }
 }
