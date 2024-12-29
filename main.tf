@@ -9,8 +9,15 @@ terraform {
 
 provider "docker" {}
 
+resource "null_resource" "build_docker_image" {
+  provisioner "local-exec" {
+    command = "docker build -t ubuntu-ssh ${path.module}"
+  }
+}
+
 resource "docker_image" "ubuntu" {
-  name = var.ubuntu_ssh_image
+  name       = var.ubuntu_ssh_image
+  depends_on = [null_resource.build_docker_image]
 }
 
 resource "docker_container" "ubuntu" {
